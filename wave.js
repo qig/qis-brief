@@ -151,96 +151,125 @@
     };
   }
 
-  // ── Lighthouse + Island ──
-  // Fixed position — does NOT bob with waves
-  const LH_X_NORM = 0.72;
+  // ── Lighthouse + Shore ──
+  // Fixed position on an asymmetric rocky shore
+  const LH_X_NORM = 0.75;
+  let beamGlowIntensity = 0; // exported for button glow
 
-  function drawIslandAndLighthouse() {
+  function drawShoreAndLighthouse() {
     const lhX = W * LH_X_NORM;
-    // Fixed base — roughly at layer 2's average position
-    const baseY = H * 0.42;
-    const lhHeight = H * 0.20;
-    const lhWidthBot = 14;
-    const lhWidthTop = 8;
+    const baseY = H * 0.38;
+    const lhHeight = H * 0.32;
+    const lhWidthBot = 20;
+    const lhWidthTop = 11;
 
-    // ── Island / rocky outcrop ──
-    const islandW = 48;
-    const islandH = 16;
-    const rockTop = baseY - islandH;
-
+    // ── Asymmetric rocky shore / headland ──
+    // Extends far right like a coast, short cliff on left
     ctx.beginPath();
-    ctx.moveTo(lhX - islandW, baseY + 4);
-    ctx.quadraticCurveTo(lhX - islandW*0.6, baseY - islandH*0.3, lhX - islandW*0.35, baseY - islandH*0.6);
-    ctx.quadraticCurveTo(lhX - islandW*0.15, baseY - islandH*0.9, lhX - 6, rockTop);
-    ctx.lineTo(lhX + 6, rockTop);
-    ctx.quadraticCurveTo(lhX + islandW*0.2, baseY - islandH*0.75, lhX + islandW*0.4, baseY - islandH*0.35);
-    ctx.quadraticCurveTo(lhX + islandW*0.7, baseY - islandH*0.1, lhX + islandW, baseY + 4);
-    ctx.lineTo(lhX + islandW, baseY + 40);
-    ctx.lineTo(lhX - islandW, baseY + 40);
+    ctx.moveTo(lhX - 70, baseY + 8);
+    ctx.quadraticCurveTo(lhX - 55, baseY - 4, lhX - 38, baseY - 10);
+    ctx.bezierCurveTo(lhX - 22, baseY - 18, lhX - 10, baseY - 22, lhX - 4, baseY - 20);
+    ctx.lineTo(lhX + 6, baseY - 20);
+    ctx.bezierCurveTo(lhX + 25, baseY - 18, lhX + 50, baseY - 12, lhX + 80, baseY - 6);
+    ctx.quadraticCurveTo(lhX + 120, baseY + 2, lhX + 160, baseY + 6);
+    ctx.lineTo(W + 10, baseY + 10);
+    ctx.lineTo(W + 10, baseY + 50);
+    ctx.lineTo(lhX - 70, baseY + 50);
     ctx.closePath();
-    ctx.fillStyle = "rgba(45, 65, 85, 0.30)";
+    ctx.fillStyle = "rgba(42, 60, 78, 0.28)";
     ctx.fill();
 
-    // Rock detail — darker indigo accent
+    // Rock texture — layered slabs
     ctx.beginPath();
-    ctx.moveTo(lhX - 12, rockTop + 1);
-    ctx.quadraticCurveTo(lhX, rockTop - 4, lhX + 10, rockTop + 2);
-    ctx.lineTo(lhX + 7, rockTop + 7);
-    ctx.lineTo(lhX - 9, rockTop + 7);
+    ctx.moveTo(lhX - 30, baseY - 14);
+    ctx.bezierCurveTo(lhX - 12, baseY - 22, lhX + 8, baseY - 22, lhX + 35, baseY - 14);
+    ctx.lineTo(lhX + 30, baseY - 8);
+    ctx.bezierCurveTo(lhX + 5, baseY - 16, lhX - 8, baseY - 16, lhX - 25, baseY - 8);
     ctx.closePath();
-    ctx.fillStyle = "rgba(50, 58, 90, 0.24)";
+    ctx.fillStyle = "rgba(50, 58, 90, 0.20)";
+    ctx.fill();
+
+    // Smaller rock detail on the right
+    ctx.beginPath();
+    ctx.moveTo(lhX + 55, baseY - 8);
+    ctx.quadraticCurveTo(lhX + 70, baseY - 14, lhX + 90, baseY - 6);
+    ctx.lineTo(lhX + 85, baseY);
+    ctx.quadraticCurveTo(lhX + 65, baseY - 6, lhX + 55, baseY - 2);
+    ctx.closePath();
+    ctx.fillStyle = "rgba(45, 55, 75, 0.18)";
     ctx.fill();
 
     // ── Tower body — warm terracotta ──
-    const topY = rockTop - lhHeight + islandH;
+    const rockTop = baseY - 20;
+    const topY = rockTop - lhHeight + 20;
 
     ctx.beginPath();
     ctx.moveTo(lhX - lhWidthBot/2, rockTop);
-    ctx.lineTo(lhX - lhWidthTop/2, topY + 12);
-    ctx.lineTo(lhX + lhWidthTop/2, topY + 12);
+    ctx.lineTo(lhX - lhWidthTop/2, topY + 14);
+    ctx.lineTo(lhX + lhWidthTop/2, topY + 14);
     ctx.lineTo(lhX + lhWidthBot/2, rockTop);
     ctx.closePath();
-    ctx.fillStyle = "rgba(180, 88, 55, 0.32)";
+    ctx.fillStyle = "rgba(180, 88, 55, 0.35)";
     ctx.fill();
 
-    // Stripe — cream with a warm tint
+    // Stripe bands
     const towerH = rockTop - topY;
-    const stripeY = topY + towerH * 0.5;
-    const stripeW = lhWidthBot * 0.72;
-    ctx.fillStyle = "rgba(245, 238, 228, 0.26)";
-    ctx.fillRect(lhX - stripeW/2, stripeY, stripeW, towerH * 0.10);
+    for (let si = 0; si < 2; si++) {
+      const sy = topY + towerH * (0.4 + si * 0.25);
+      const frac = (sy - topY) / towerH;
+      const sw = lhWidthTop + (lhWidthBot - lhWidthTop) * frac;
+      ctx.fillStyle = "rgba(245, 238, 228, 0.22)";
+      ctx.fillRect(lhX - sw * 0.36, sy, sw * 0.72, towerH * 0.06);
+    }
 
-    // Lantern room — deeper terracotta
-    ctx.fillStyle = "rgba(170, 80, 48, 0.38)";
-    ctx.fillRect(lhX - lhWidthTop/2 - 1, topY + 6, lhWidthTop + 2, 8);
+    // Gallery/balcony
+    ctx.fillStyle = "rgba(160, 75, 42, 0.40)";
+    ctx.fillRect(lhX - lhWidthTop/2 - 3, topY + 10, lhWidthTop + 6, 4);
+
+    // Lantern room
+    ctx.fillStyle = "rgba(170, 80, 48, 0.42)";
+    ctx.fillRect(lhX - lhWidthTop/2, topY + 2, lhWidthTop, 10);
+
+    // Glass panes in lantern
+    ctx.fillStyle = "rgba(255, 230, 180, 0.18)";
+    ctx.fillRect(lhX - lhWidthTop/2 + 2, topY + 4, lhWidthTop - 4, 6);
 
     // Dome — indigo
     ctx.beginPath();
-    ctx.arc(lhX, topY + 6, lhWidthTop/2 + 1, Math.PI, 0);
+    ctx.arc(lhX, topY + 2, lhWidthTop/2 + 1, Math.PI, 0);
+    ctx.fillStyle = "rgba(55, 65, 110, 0.38)";
+    ctx.fill();
+
+    // Dome tip
+    ctx.beginPath();
+    ctx.moveTo(lhX - 2, topY - 1);
+    ctx.lineTo(lhX, topY - 6);
+    ctx.lineTo(lhX + 2, topY - 1);
+    ctx.closePath();
     ctx.fillStyle = "rgba(55, 65, 110, 0.35)";
     ctx.fill();
 
     // ── Sweeping light beam ──
-    const lanternY = topY + 8;
-    // Sweep: oscillates ±0.8 rad around vertical-up (-PI/2)
-    const sweep = Math.sin(time * 0.5) * 0.8;
+    const lanternY = topY + 6;
+    const sweep = Math.sin(time * 0.4) * 1.1;
     const beamAngle = -Math.PI / 2 + sweep;
-    const beamLen = Math.max(W, H) * 0.45;
-    const beamHalf = 0.06;
+    const beamLen = Math.max(W, H) * 0.6;
+    const beamHalf = 0.10;
 
     ctx.save();
     ctx.translate(lhX, lanternY);
 
     // Soft glow around lantern
-    const glowGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, 40);
-    glowGrad.addColorStop(0, "rgba(255, 220, 160, 0.12)");
-    glowGrad.addColorStop(1, "rgba(255, 220, 160, 0)");
+    const glowGrad = ctx.createRadialGradient(0, 0, 3, 0, 0, 60);
+    glowGrad.addColorStop(0, "rgba(255, 215, 140, 0.25)");
+    glowGrad.addColorStop(0.4, "rgba(255, 200, 120, 0.08)");
+    glowGrad.addColorStop(1, "rgba(255, 200, 120, 0)");
     ctx.beginPath();
-    ctx.arc(0, 0, 40, 0, Math.PI * 2);
+    ctx.arc(0, 0, 60, 0, Math.PI * 2);
     ctx.fillStyle = glowGrad;
     ctx.fill();
 
-    // Main beam cone
+    // Main beam cone — wider, brighter
     const a1 = beamAngle - beamHalf;
     const a2 = beamAngle + beamHalf;
 
@@ -250,22 +279,24 @@
     ctx.arc(0, 0, beamLen, a1, a2);
     ctx.closePath();
 
-    const beamGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, beamLen);
-    beamGrad.addColorStop(0, "rgba(255, 220, 160, 0.16)");
-    beamGrad.addColorStop(0.25, "rgba(255, 210, 140, 0.05)");
+    const beamGrad = ctx.createRadialGradient(0, 0, 3, 0, 0, beamLen);
+    beamGrad.addColorStop(0, "rgba(255, 218, 140, 0.28)");
+    beamGrad.addColorStop(0.15, "rgba(255, 210, 130, 0.12)");
+    beamGrad.addColorStop(0.5, "rgba(255, 200, 120, 0.04)");
     beamGrad.addColorStop(1, "rgba(255, 200, 120, 0)");
     ctx.fillStyle = beamGrad;
     ctx.fill();
 
-    // Bright core
-    const coreHalf = beamHalf * 0.35;
+    // Bright core beam
+    const coreHalf = beamHalf * 0.3;
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    ctx.lineTo(Math.cos(beamAngle - coreHalf) * beamLen * 0.55, Math.sin(beamAngle - coreHalf) * beamLen * 0.55);
-    ctx.arc(0, 0, beamLen * 0.55, beamAngle - coreHalf, beamAngle + coreHalf);
+    ctx.lineTo(Math.cos(beamAngle - coreHalf) * beamLen * 0.7, Math.sin(beamAngle - coreHalf) * beamLen * 0.7);
+    ctx.arc(0, 0, beamLen * 0.7, beamAngle - coreHalf, beamAngle + coreHalf);
     ctx.closePath();
-    const coreGrad = ctx.createRadialGradient(0, 0, 1, 0, 0, beamLen * 0.55);
-    coreGrad.addColorStop(0, "rgba(255, 240, 200, 0.10)");
+    const coreGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, beamLen * 0.7);
+    coreGrad.addColorStop(0, "rgba(255, 235, 190, 0.18)");
+    coreGrad.addColorStop(0.3, "rgba(255, 220, 160, 0.06)");
     coreGrad.addColorStop(1, "rgba(255, 220, 160, 0)");
     ctx.fillStyle = coreGrad;
     ctx.fill();
@@ -274,9 +305,34 @@
 
     // Lantern bright point
     ctx.beginPath();
-    ctx.arc(lhX, lanternY, 3, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(255, 230, 180, 0.45)";
+    ctx.arc(lhX, lanternY, 4, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255, 225, 160, 0.55)";
     ctx.fill();
+    ctx.beginPath();
+    ctx.arc(lhX, lanternY, 2, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255, 245, 220, 0.7)";
+    ctx.fill();
+
+    // ── Compute beam glow intensity for the subscribe button ──
+    const btn = document.querySelector(".subscribe-form button");
+    if (btn) {
+      const btnRect = btn.getBoundingClientRect();
+      const canvasRect = canvas.getBoundingClientRect();
+      const btnCx = btnRect.left + btnRect.width / 2 - canvasRect.left;
+      const btnCy = btnRect.top + btnRect.height / 2 - canvasRect.top;
+      const dx = btnCx - lhX, dy = btnCy - lanternY;
+      const angleToBtn = Math.atan2(dy, dx);
+      let diff = Math.abs(beamAngle - angleToBtn);
+      if (diff > Math.PI) diff = 2 * Math.PI - diff;
+      beamGlowIntensity = Math.max(0, 1 - diff / (beamHalf * 2.5));
+      beamGlowIntensity = beamGlowIntensity * beamGlowIntensity;
+      const glow = beamGlowIntensity;
+      if (glow > 0.01) {
+        btn.style.boxShadow = `0 0 ${12 + glow * 20}px ${glow * 8}px rgba(255, 210, 140, ${glow * 0.35})`;
+      } else {
+        btn.style.boxShadow = "";
+      }
+    }
   }
 
   function resize() {
@@ -342,7 +398,7 @@
         }
         ctx.closePath();
         ctx.clip();
-        drawIslandAndLighthouse();
+        drawShoreAndLighthouse();
         ctx.restore();
       }
 
