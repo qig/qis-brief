@@ -1,6 +1,6 @@
 // ── Configuration ──────────────────────────────────
 // Change this to your backend URL (must be publicly reachable)
-const API_BASE = "https://your-backend:8430";
+const API_BASE = "https://api.qiguo.dev";
 
 // ── Form handling ──────────────────────────────────
 const form = document.getElementById("hero-form");
