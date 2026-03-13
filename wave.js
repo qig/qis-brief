@@ -258,16 +258,17 @@
 
     // Main shore mass — all curves, no straight edges
     ctx.beginPath();
-    ctx.moveTo(lhX - 85, baseY + 18);
-    ctx.bezierCurveTo(lhX - 78, baseY + 8, lhX - 70, baseY + 4, lhX - 60, baseY);
-    ctx.bezierCurveTo(lhX - 50, baseY - 4, lhX - 44, baseY - 2, lhX - 38, baseY - 8);
-    ctx.bezierCurveTo(lhX - 30, baseY - 14, lhX - 20, baseY - 19, lhX - 8, baseY - 21);
-    ctx.bezierCurveTo(lhX, baseY - 22, lhX + 8, baseY - 21, lhX + 18, baseY - 19);
+    // Start below water on the far left so left edge is submerged
+    ctx.moveTo(lhX - 160, baseY + 120);
+    // Rise gently from underwater into the shore
+    ctx.bezierCurveTo(lhX - 155, baseY + 60, lhX - 140, baseY + 30, lhX - 115, baseY + 12);
+    ctx.bezierCurveTo(lhX - 90, baseY - 2, lhX - 60, baseY - 14, lhX - 30, baseY - 18);
+    ctx.bezierCurveTo(lhX - 18, baseY - 21, lhX - 5, baseY - 22, lhX + 18, baseY - 19);
     ctx.bezierCurveTo(lhX + 35, baseY - 15, lhX + 55, baseY - 10, lhX + 80, baseY - 5);
     ctx.bezierCurveTo(lhX + 110, baseY + 1, lhX + 140, baseY + 5, lhX + 170, baseY + 7);
     ctx.bezierCurveTo(lhX + 200, baseY + 9, W - 20, baseY + 10, W + 10, baseY + 11);
     ctx.lineTo(W + 10, baseY + 120);
-    ctx.bezierCurveTo(W * 0.5, baseY + 115, lhX - 40, baseY + 110, lhX - 85, baseY + 100);
+    ctx.lineTo(lhX - 160, baseY + 120);
     ctx.closePath();
     // Warm stone — distinct from cool ocean blues
     ctx.fillStyle = "rgb(165, 150, 140)";
