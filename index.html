@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Qi's Brief</title>
+  <meta name="description" content="A daily news and research newsletter, distilled by Qi. Subscribe for free.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+
+    <header class="hero">
+      <h1 class="title">Qi's Brief</h1>
+      <p class="tagline">A news &amp; research newsletter, distilled by Qi.<br>Every morning in your inbox.</p>
+
+      <form id="hero-form" class="subscribe-form">
+        <div class="form-row">
+          <input type="email" id="hero-email" placeholder="you@example.com" required autocomplete="email">
+          <button type="submit">Subscribe</button>
+        </div>
+        <p class="form-note">Unsubscribe anytime.</p>
+      </form>
+      <div id="hero-message" class="form-message" hidden></div>
+    </header>
+
+  </div>
+
+  <canvas id="wave-canvas"></canvas>
+
+  <footer class="footer">
+    <p>By Qi &middot; <a href="https://qig.github.io" target="_blank" rel="noopener">Contact</a></p>
+  </footer>
+
+  <script src="wave.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
