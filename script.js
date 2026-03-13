@@ -28,7 +28,13 @@ form.addEventListener("submit", async (e) => {
     const data = await res.json();
 
     if (res.ok) {
-      messageEl.textContent = "Check your inbox for a verification email.";
+      messageEl.textContent = "";
+      const mainText = document.createTextNode("Check your inbox for a verification email.");
+      const br = document.createElement("br");
+      const spamHint = document.createElement("span");
+      spamHint.textContent = "Didn\u2019t see it? Check your spam or junk folder.";
+      spamHint.style.cssText = "font-size:12px;font-weight:300;color:#8A8480;";
+      messageEl.append(mainText, br, spamHint);
       messageEl.className = "form-message success";
       emailInput.value = "";
     } else {
